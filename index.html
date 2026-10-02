@@ -1,0 +1,186 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>GS-18 · Gain Staging Signal Chain</title>
+<style>
+:root{--cream:#e8e0ca;--cream2:#d8ceb2;--char:#2f2d29;--ink:#3a362e;--olive:#76785a;--ochre:#b0904f;--rust:#985a3f;--walnut:#5a3f2f;--walnut2:#3d2b20;--amber:#d6b676}
+*{box-sizing:border-box}
+body{margin:0;padding:24px;background:#47433c;color:var(--ink);font-family:"Futura","Avenir Next","Century Gothic","Trebuchet MS",Arial,sans-serif}
+.cab{max-width:1460px;margin:0 auto;padding:16px 28px;border-radius:10px;background:linear-gradient(90deg,var(--walnut2),var(--walnut) 2.5%,#684936 50%,var(--walnut) 97.5%,var(--walnut2));box-shadow:0 12px 34px rgba(0,0,0,.5)}
+.plate{border-radius:4px;padding:16px 20px 18px;margin:10px 0;background:repeating-linear-gradient(90deg,rgba(255,255,255,.06) 0 1px,rgba(0,0,0,.035) 1px 3px),linear-gradient(180deg,#d2cfc6,#b9b5aa);box-shadow:inset 0 1px 0 #f2f0ea,inset 0 -2px 5px rgba(0,0,0,.25)}
+.eng{color:#4a463e;text-transform:uppercase;letter-spacing:.18em;text-shadow:0 1px 0 rgba(255,255,255,.55)}
+header.plate{display:flex;justify-content:space-between;align-items:baseline;flex-wrap:wrap;gap:8px}
+header h1{margin:0;font-size:21px;font-weight:600}
+header .model{font-size:11px}
+.top{display:grid;grid-template-columns:330px 92px 1fr;gap:22px;align-items:stretch}
+.bezel{background:#1f1d1a;padding:9px;border-radius:6px;box-shadow:inset 0 0 0 2px #7a766c,0 2px 4px rgba(0,0,0,.4)}
+.cap{font-size:10px;line-height:1.35;margin-top:6px;letter-spacing:.06em;color:#4a463e}
+.rule{background:linear-gradient(180deg,var(--cream),var(--cream2));border:1px solid #a49c86;border-radius:3px;padding:14px 18px;box-shadow:inset 0 1px 0 #f6f1e3}
+.rule h2{margin:0 0 6px;font-size:13px;color:var(--rust)}
+.rule p.big{margin:0 0 8px;font-size:18px;line-height:1.35;color:var(--char)}
+.rule .myth{font-size:12px;color:#5a5446;border-top:1px dashed #a49c86;padding-top:7px;margin-top:8px}
+.rule .myth s{color:var(--rust)}
+.rowhead{display:flex;justify-content:space-between;align-items:baseline;margin:2px 0 10px}
+.rowhead h3{margin:0;font-size:14px}
+.rowhead span{font-size:10px}
+.chain{display:flex;align-items:stretch;gap:0}
+.arrow{align-self:center;color:#4a463e;font-size:16px;padding:0 3px;opacity:.75}
+.mod{flex:1 1 0;min-width:0;background:linear-gradient(180deg,#cdc9bf,#b6b2a7);border:1px solid #96928a;border-radius:3px;padding:7px 6px 0;text-align:center;display:flex;flex-direction:column;box-shadow:inset 0 1px 0 #ebe8e0}
+.mod.key{background:linear-gradient(180deg,#d7cdb0,#c1b591);border-color:var(--ochre);box-shadow:inset 0 0 0 1px var(--ochre),inset 0 1px 0 #f0e8d0}
+.mod .no{font-size:9px;letter-spacing:.2em;color:#6a665c}
+.mod .nm{font-size:11px;font-weight:600;margin:2px 0 0;min-height:28px;display:flex;align-items:center;justify-content:center}
+.mod svg.knob{margin:2px auto 0;display:block}
+.mod .ctrl{font-size:9.5px;font-weight:700;letter-spacing:.14em;color:var(--char);text-transform:uppercase;margin-top:2px}
+.mod .unit{display:inline-block;margin:5px auto 5px;font-size:9px;letter-spacing:.12em;padding:2px 6px;border-radius:2px;color:#efe8d6}
+.mod .tgt{background:var(--cream);border:1px solid #a49c86;border-radius:2px;font-size:10.5px;line-height:1.3;padding:5px 4px;color:var(--char);min-height:44px;display:flex;align-items:center;justify-content:center}
+.mod .bad{font-size:9px;line-height:1.3;text-align:left;padding:5px 2px 6px;color:#4f4a40;flex:1}
+.mod .bad b{color:var(--olive)} .mod .bad i{font-style:normal;color:var(--rust);font-weight:700}
+.mod .dom{height:6px;margin:0 -6px;border-radius:0 0 2px 2px}
+.setstamp{font-size:8.5px;letter-spacing:.2em;color:#efe8d6;background:var(--ochre);border-radius:2px;padding:1px 5px;margin:3px auto 0;display:inline-block}
+.legend{display:flex;gap:18px;flex-wrap:wrap;font-size:10px;letter-spacing:.12em;margin-top:10px}
+.legend i{display:inline-block;width:22px;height:7px;border-radius:1px;margin-right:6px;vertical-align:middle}
+.deliv{display:grid;grid-template-columns:repeat(4,1fr);gap:12px}
+.jewel{background:#24221e;border-radius:4px;padding:10px 12px;color:var(--amber);box-shadow:inset 0 0 0 2px #6f6b62}
+.jewel .k{font-size:9.5px;letter-spacing:.2em;color:#a99b78}
+.jewel .v{font-size:19px;margin-top:3px;color:#d9c28f}
+.jewel .s{font-size:10px;color:#a99b78;margin-top:2px}
+footer{font-size:9.5px;letter-spacing:.08em;color:#d7ccb5;text-align:center;padding:6px 0 2px;opacity:.8}
+@keyframes sway{0%{transform:rotate(-20deg)}22%{transform:rotate(-6deg)}38%{transform:rotate(-13deg)}60%{transform:rotate(9deg)}78%{transform:rotate(-4deg)}100%{transform:rotate(-20deg)}}
+.needle{transform-box:view-box;transform-origin:150px 214px;animation:sway 4.2s ease-in-out infinite}
+@media (prefers-reduced-motion:reduce){.needle{animation:none;transform:rotate(-4deg)}}
+@media (max-width:1100px){.chain{flex-wrap:wrap;gap:8px}.arrow{display:none}.mod{flex:1 1 150px}.top{grid-template-columns:1fr}.deliv{grid-template-columns:1fr 1fr}}
+</style>
+</head>
+<body>
+<svg width="0" height="0" style="position:absolute">
+ <defs>
+  <radialGradient id="bake" cx="38%" cy="32%" r="75%"><stop offset="0" stop-color="#5b5751"/><stop offset=".55" stop-color="#2c2a27"/><stop offset="1" stop-color="#161513"/></radialGradient>
+  <radialGradient id="skirt" cx="50%" cy="40%" r="70%"><stop offset="0" stop-color="#e3e0d8"/><stop offset=".7" stop-color="#b3afa5"/><stop offset="1" stop-color="#8e8a81"/></radialGradient>
+  <radialGradient id="glow" cx="50%" cy="85%" r="85%"><stop offset="0" stop-color="#efe3c2"/><stop offset=".6" stop-color="#e2d3ad"/><stop offset="1" stop-color="#c9b78d"/></radialGradient>
+ </defs>
+</svg>
+
+<div class="cab">
+ <header class="plate">
+  <h1 class="eng">Signal Chain · Gain Staging</h1>
+  <div class="model eng">Model GS-18 · Podcast &amp; Film/TV · Set once — then unity</div>
+ </header>
+
+ <section class="plate top">
+  <div>
+   <div class="bezel" id="vu"></div>
+   <div class="cap eng">VU · average reading · 300 ms · −20…+3 · 0 VU = +4 dBu<br>Hides peaks by 6–10 dB+ — watch the peak meter for clipping</div>
+  </div>
+  <div>
+   <div class="bezel" id="ladder"></div>
+   <div class="cap eng">Peak dBFS</div>
+  </div>
+  <div class="rule">
+   <h2 class="eng">The rule of thumb</h2>
+   <p class="big">Set level <b>once — at the preamp</b>. Speech averages <b>−18 to −20 dBFS</b>, peaks near <b>−10</b>, never above −6. Run every later stage at <b>unity</b>. Turn the finished master <b>up</b> to the delivery target. Set the speakers to a <b>calibrated SPL</b>.</p>
+   <div class="myth"><s>“−18 dB at every stage, all the way to the speakers”</s> → only the converter speaks dBFS. Mics speak millivolts (dBV), line gear speaks dBu, delivery speaks LUFS, the room speaks dB SPL.<br>
+   Alignment: −18 dBFS = 0 dBu (EBU R68) · −20 dBFS = +4 dBu = 0 VU (SMPTE RP155) · plugin habit: 0 VU ≈ −18 dBFS.</div>
+  </div>
+ </section>
+
+ <section class="plate">
+  <div class="rowhead"><h3 class="eng">A · Podcast studio</h3><span class="eng">mic ▸ booster ▸ preamp ▸ A/D ▸ DAW ▸ plugins ▸ master ▸ loudness ▸ ears</span></div>
+  <div class="chain" id="pod"></div>
+ </section>
+
+ <section class="plate">
+  <div class="rowhead"><h3 class="eng">B · Film / TV location</h3><span class="eng">lav/boom ▸ TX ▸ RX ▸ mixer-recorder ▸ file ▸ post ▸ broadcast master ▸ monitors</span></div>
+  <div class="chain" id="film"></div>
+  <div class="legend eng" id="legend"></div>
+ </section>
+
+ <section class="plate deliv">
+  <div class="jewel"><div class="k">Podcast · Apple</div><div class="v">−16 LUFS</div><div class="s">±1 LU · true peak ≤ −1 dBTP</div></div>
+  <div class="jewel"><div class="k">TV · Europe · EBU R128</div><div class="v">−23 LUFS</div><div class="s">true peak ≤ −1 dBTP</div></div>
+  <div class="jewel"><div class="k">TV · USA · ATSC A/85</div><div class="v">−24 LKFS</div><div class="s">true peak ≤ −2 dBTP</div></div>
+  <div class="jewel"><div class="k">Monitor calibration</div><div class="v">−20 dBFS pink</div><div class="s">≈ 79 dBC TV/small room · 85 dBC cinema</div></div>
+ </section>
+ <footer>Values are working targets for teaching · check your converter's 0 dBFS = dBu calibration and the current delivery spec</footer>
+</div>
+
+<script>
+const DOM={an:['Analog','dBV · dBu','#76785a'],dg:['Digital','dBFS','#b0904f'],dl:['Delivery','LUFS · dBTP','#985a3f'],ac:['Acoustic','dB SPL','#2f2d29']};
+const POD=[
+ {n:'Microphone',c:'Placement',u:'dBV · mV',d:'an',t:'SM7B ≈ −59 dBV/Pa (1.1 mV)',lo:'far: thin, roomy',hi:'close: plosives, boom',a:-100},
+ {n:'Inline booster',c:'Fixed · optional',u:'+25 dB',d:'an',t:'Cloudlifter-type · needs 48 V',lo:'skip: preamp maxed, hiss',hi:'n/a — fixed gain',a:0},
+ {n:'Preamp',c:'Gain',u:'dB of gain',d:'an',t:'≈ 50–60 dB for SM7B speech',lo:'hiss when raised later',hi:'analog clip — permanent',a:95,key:1},
+ {n:'A/D converter',c:'Input meter',u:'dBFS',d:'dg',t:'avg −18…−20 · peaks ≈ −10 · max −6',lo:'noise after boost',hi:'0 dBFS hard clip',a:-10},
+ {n:'DAW clip gain',c:'Clip · trim',u:'dBFS RMS',d:'dg',t:'≈ −18 dBFS avg into plugins',lo:'comps under-react',hi:'analog models over-drive',a:0},
+ {n:'Plugins',c:'In / out = unity',u:'dB',d:'dg',t:'match the bypassed level',lo:'“louder = better” trap',hi:'gain creep in stack',a:0},
+ {n:'Bus · master',c:'Fader',u:'dBFS',d:'dg',t:'mix peaks ≈ −6 before mastering',lo:'harmless, just quiet',hi:'float hides it; export clips',a:0},
+ {n:'Loudness · limiter',c:'Output — turn up',u:'LUFS · dBTP',d:'dl',t:'−16 LUFS · ≤ −1 dBTP',lo:'listeners crank volume',hi:'over-limited, codec clips',a:80},
+ {n:'Headphones · monitors',c:'Volume — set once',u:'dB SPL',d:'ac',t:'calibrated, fixed, comfortable',lo:'you push mix too loud',hi:'fatigue; quiet mix',a:30}
+];
+const FILM=[
+ {n:'Lav · boom',c:'Placement',u:'mV',d:'an',t:'lav close · boom just out of frame',lo:'off-axis: room, noise',hi:'shouts overload capsule',a:-100},
+ {n:'Wireless TX',c:'Input gain',u:'dB re full mod.',d:'an',t:'“−20” LED flickers red on loud peaks',lo:'lost in RF noise',hi:'constant limiting',a:70,key:1},
+ {n:'Wireless RX',c:'Output level',u:'dBu',d:'an',t:'match recorder input (mic / line)',lo:'recorder gain maxed',hi:'overloads mixer input',a:10},
+ {n:'Mixer · recorder',c:'Trim + fader',u:'dB → dBFS',d:'an',t:'dialogue avg ≈ −20 · peaks −12…−6',lo:'noisy, weak tracks',hi:'preamp clips first',a:60,key:1},
+ {n:'Recorder file',c:'Peak meter · limiter',u:'dBFS',d:'dg',t:'24-bit: limiter on · 32f: safety net',lo:'32-bit float: fine',hi:'24-bit clip is final',a:-10},
+ {n:'Post DAW',c:'Clip gain · dialogue bus',u:'dBFS · LU',d:'dg',t:'even dialogue; mix around it',lo:'dialogue buried',hi:'bus / plugin overload',a:0},
+ {n:'Broadcast master',c:'Loudness · TP limiter',u:'LUFS · dBTP',d:'dl',t:'−23 LUFS EBU · −24 LKFS ATSC',lo:'fails QC',hi:'fails QC',a:40},
+ {n:'Monitors',c:'Calibrated level',u:'dB SPL (C)',d:'ac',t:'−20 dBFS pink → ≈ 79 dBC (TV)',lo:'mix ends up loud',hi:'mix ends up quiet',a:30}
+];
+function knob(s,a,key){
+ let t='';for(let i=0;i<11;i++){const g=(-135+27*i)*Math.PI/180;const x1=50+44*Math.sin(g),y1=50-44*Math.cos(g),x2=50+48*Math.sin(g),y2=50-48*Math.cos(g);t+=`<line x1="${x1.toFixed(1)}" y1="${y1.toFixed(1)}" x2="${x2.toFixed(1)}" y2="${y2.toFixed(1)}" stroke="#4a463e" stroke-width="${i%5==0?2:1.2}"/>`;}
+ let k='';for(let i=0;i<36;i++){k+=`<line x1="50" y1="15" x2="50" y2="19" stroke="#8a867d" stroke-width="1" transform="rotate(${i*10} 50 50)"/>`;}
+ return `<svg class="knob" width="${s}" height="${s}" viewBox="0 0 100 100">${t}
+ ${key?'<circle cx="50" cy="50" r="40.5" fill="none" stroke="#b0904f" stroke-width="2.5"/>':''}
+ <circle cx="50" cy="52" r="37" fill="rgba(0,0,0,.25)"/>
+ <circle cx="50" cy="50" r="36" fill="url(#skirt)" stroke="#7d796f" stroke-width="1"/>${k}
+ <circle cx="50" cy="50" r="27" fill="url(#bake)" stroke="#111" stroke-width="1"/>
+ <ellipse cx="44" cy="40" rx="11" ry="6" fill="rgba(255,255,255,.07)"/>
+ <g transform="rotate(${a} 50 50)"><line x1="50" y1="48" x2="50" y2="17" stroke="#e8e0ca" stroke-width="3" stroke-linecap="round"/></g></svg>`;
+}
+function build(id,arr){
+ const el=document.getElementById(id);let h='';
+ arr.forEach((m,i)=>{const D=DOM[m.d];
+  h+=`<div class="mod${m.key?' key':''}"><div class="no">${String(i+1).padStart(2,'0')}</div><div class="nm eng">${m.n}</div>
+  ${knob(m.key?74:58,m.a,m.key)}${m.key?'<div><span class="setstamp">SET LEVEL HERE</span></div>':''}
+  <div class="ctrl">${m.c}</div><div><span class="unit" style="background:${D[2]}">${m.u}</span></div>
+  <div class="tgt">${m.t}</div><div class="bad"><b>▼</b> ${m.lo}<br><i>▲</i> ${m.hi}</div><div class="dom" style="background:${D[2]}"></div></div>`;
+  if(i<arr.length-1)h+='<div class="arrow">▸</div>';});
+ el.innerHTML=h;
+}
+build('pod',POD);build('film',FILM);
+document.getElementById('legend').innerHTML=Object.values(DOM).map(d=>`<span><i style="background:${d[2]}"></i>${d[0]} · ${d[1]}</span>`).join('');
+(function vu(){
+ const cx=150,cy=214,R=168,top=Math.pow(10,3/20),p0=0.1/top;
+ const ang=db=>-46+92*((Math.pow(10,db/20)/top)-p0)/(1-p0);
+ const pt=(a,r)=>[cx+r*Math.sin(a*Math.PI/180),cy-r*Math.cos(a*Math.PI/180)];
+ let s=`<svg viewBox="0 0 300 170" width="100%"><defs><clipPath id="vc"><rect x="0" y="0" width="300" height="170" rx="4"/></clipPath></defs>
+ <rect x="0" y="0" width="300" height="170" rx="4" fill="url(#glow)"/><g clip-path="url(#vc)">`;
+ const a0=ang(0),a3=ang(3),[x0,y0]=pt(a0,R),[x3,y3]=pt(a3,R),[xa,ya]=pt(ang(-20),R);
+ s+=`<path d="M${xa.toFixed(1)} ${ya.toFixed(1)} A${R} ${R} 0 0 1 ${x0.toFixed(1)} ${y0.toFixed(1)}" fill="none" stroke="#3a362e" stroke-width="1.4"/>`;
+ s+=`<path d="M${x0.toFixed(1)} ${y0.toFixed(1)} A${R} ${R} 0 0 1 ${x3.toFixed(1)} ${y3.toFixed(1)}" fill="none" stroke="#985a3f" stroke-width="6"/>`;
+ [-20,-10,-7,-5,-3,-2,-1,0,1,2,3].forEach(db=>{const a=ang(db),[x1,y1]=pt(a,R),[x2,y2]=pt(a,R+(Math.abs(db)%5==0||db==-7||db==-3?12:8)),[tx,ty]=pt(a,R+24);
+  const c=db>0?'#985a3f':'#2f2d29';
+  s+=`<line x1="${x1.toFixed(1)}" y1="${y1.toFixed(1)}" x2="${x2.toFixed(1)}" y2="${y2.toFixed(1)}" stroke="${c}" stroke-width="1.6"/>`;
+  s+=`<text x="${tx.toFixed(1)}" y="${(ty+4).toFixed(1)}" font-size="11" text-anchor="middle" fill="${c}" font-family="Futura,Century Gothic,Arial">${db>0?'+'+db:Math.abs(db)}</text>`;});
+ [-15,-12,-8,-6,-4,-2.5,-1.5,-0.5,0.5,1.5,2.5].forEach(db=>{const a=ang(db),[x1,y1]=pt(a,R),[x2,y2]=pt(a,R+5);s+=`<line x1="${x1.toFixed(1)}" y1="${y1.toFixed(1)}" x2="${x2.toFixed(1)}" y2="${y2.toFixed(1)}" stroke="${db>0?'#985a3f':'#2f2d29'}" stroke-width="0.8"/>`;});
+ s+=`<text x="150" y="112" font-size="20" text-anchor="middle" fill="#3a362e" font-family="Futura,Century Gothic,Arial" letter-spacing="3">VU</text>
+ <text x="150" y="128" font-size="8" text-anchor="middle" fill="#5a5446" font-family="Futura,Century Gothic,Arial" letter-spacing="1.5">0 VU = +4 dBu · ≈ −18 / −20 dBFS</text>
+ <text x="22" y="160" font-size="10" fill="#2f2d29" font-family="Futura,Arial">−</text><text x="270" y="160" font-size="12" fill="#985a3f" font-family="Futura,Arial">+</text>
+ <g class="needle"><line x1="${cx}" y1="${cy}" x2="${cx}" y2="${cy-R-10}" stroke="#2a2824" stroke-width="1.6"/></g></g>
+ <rect x="110" y="150" width="80" height="20" fill="#1f1d1a"/><rect x="0" y="0" width="300" height="170" rx="4" fill="none" stroke="#8b8576" stroke-width="2"/></svg>`;
+ document.getElementById('vu').innerHTML=s;
+})();
+(function ladder(){
+ const y=db=>8+(-db)/60*180;let s=`<svg viewBox="0 0 74 196" width="100%">`;
+ for(let d=-60;d<0;d+=3){const top=d+3;const lit=top<=-9;const col=top>-6?'#985a3f':(top>-18?'#b0904f':'#76785a');
+  s+=`<rect x="34" y="${(y(top)+0.8).toFixed(1)}" width="16" height="${(180/20-1.6).toFixed(1)}" rx="1" fill="${col}" opacity="${lit?0.95:0.22}"/>`;}
+ [0,-6,-10,-18,-30,-60].forEach(d=>{s+=`<text x="30" y="${(y(d)+3).toFixed(1)}" font-size="8" text-anchor="end" fill="#cfc6ae" font-family="Futura,Arial">${d}</text>`;});
+ s+=`<text x="54" y="${(y(-10)+3).toFixed(1)}" font-size="7" fill="#d6b676" font-family="Futura,Arial">◂PK</text>`;
+ s+=`<text x="54" y="${(y(-18)+3).toFixed(1)}" font-size="7" fill="#d6b676" font-family="Futura,Arial">◂AVG</text></svg>`;
+ document.getElementById('ladder').innerHTML=s;
+})();
+</script>
+</body>
+</html>
